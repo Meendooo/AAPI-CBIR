@@ -119,14 +119,15 @@ def retrieve_image(img_query, extractor_name, n_imgs=11):
     vector = features.reshape(1, -1).astype(np.float32)
     
     # Search in FAISS
-    _, indices = indexer.search(vector, k=n_imgs)
+    distances, indices = indexer.search(vector, k=n_imgs)
     
     # Clean up
     if os.path.exists(temp_path):
         os.remove(temp_path)
     
     # Get image paths and classes
-    results = mapping_df.iloc[indices[0]]
+    results = mapping_df.iloc[indices[0]].copy()
+    results['distance'] = distances[0]
     
     return results
 
